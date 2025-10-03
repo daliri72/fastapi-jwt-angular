@@ -1,0 +1,31 @@
+services:
+  # Backend Service
+  - type: web
+    name: jwt-backend
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    region: frankfurt
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 30
+      - key: DATABASE_URL
+        value: sqlite:///./sql_app.db
+
+  # Frontend Service
+  - type: web
+    name: jwt-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist/frontend/browser
+    region: frankfurt
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
