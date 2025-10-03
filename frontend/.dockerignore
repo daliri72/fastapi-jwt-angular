@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.angular/
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+.DS_Store
+.git/
+.gitignore
+README.md
+e2e/
+src/**/*.spec.ts

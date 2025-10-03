@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # Backend Service (FastAPI)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: jwt-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+      - DATABASE_URL=sqlite:///./sql_app.db
+    volumes:
+      - ./backend:/app
+      - backend_db:/app
+    networks:
+      - jwt-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend Service (Angular)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: jwt-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - jwt-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  backend_db:
+    driver: local
+
+networks:
+  jwt-network:
+    driver: bridge
