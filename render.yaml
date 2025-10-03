@@ -5,7 +5,6 @@ services:
     env: docker
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
-    region: frankfurt
     plan: free
     healthCheckPath: /
     envVars:
@@ -24,7 +23,6 @@ services:
     env: static
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: ./frontend/dist/frontend/browser
-    region: frankfurt
     routes:
       - type: rewrite
         source: /*
